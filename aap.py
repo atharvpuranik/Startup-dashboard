@@ -47,6 +47,55 @@ def load_overall_analysis():
 
     st.pyplot(fig8)
 
+def load_startup_deatils(startup):
+    st.title(startup)
+    # last 5 investments
+    Last_df = df[df['startup'].str.contains(startup)].head()[
+        ['date', 'startup', 'vertical', 'city', 'round','investors', 'amount']]
+    st.subheader('Startup details')
+    st.dataframe(Last_df)
+
+    col1, col2 = st.columns(2)
+
+    # biggest Investments
+    with col1:
+        big_series_bar = df[df['startup'].str.contains(startup)].groupby('startup')['amount'].sum().sort_values(
+            ascending=False).head()
+        st.subheader('Biggest Investments')
+
+        figx, axy = plt.subplots()
+        axy.bar(big_series_bar.index, big_series_bar.values)
+        st.pyplot(figx)
+
+        city_series_pie = df[df['startup'].str.contains(startup)].groupby('city')['amount'].sum()
+
+        st.subheader('Location ')
+        fig7, ax7 = plt.subplots()
+        ax7.pie(city_series_pie, labels=city_series_pie.index, autopct='%0.01f%%')
+
+        st.pyplot(fig7)
+
+    with col2:
+        big_series_pie = df[df['startup'].str.contains(startup)].groupby('vertical')['amount'].sum()
+
+        st.subheader('Industry')
+        fig0, ax0 = plt.subplots()
+        ax0.pie(big_series_pie, labels=big_series_pie.index, autopct='%0.01f%%')
+
+        st.pyplot(fig0)
+
+        round_series_pie1 = df[df['startup'].str.contains(startup)].groupby('round')['amount'].sum()
+
+        st.subheader('Stages Invested ')
+        fig11, ax11 = plt.subplots()
+        ax11.pie(round_series_pie1, labels=round_series_pie1.index, autopct='%0.01f%%')
+
+        st.pyplot(fig11)
+
+    # st.subheader('Similar startups')
+
+
+
 def load_investor_details(investor):
 
     st.title(investor)
@@ -108,9 +157,11 @@ option = st.sidebar.selectbox('Select One',['Overall Analysis','Startup','Invest
 if option == 'Overall Analysis':
     load_overall_analysis()
 elif option == 'Startup':
-    st.sidebar.selectbox('Select Startup',sorted(df['startup '].unique().tolist()))
-    botn1 = st.sidebar.button('Find startup details')
+    selected_startup=st.sidebar.selectbox('Select Startup',sorted(df['startup'].unique().tolist()))
+    butn = st.sidebar.button('Find startup details')
     st.title("Startup Analysis")
+    if butn:
+        load_startup_deatils(selected_startup)
 else:
     selected_investor = st.sidebar.selectbox('Select Investor', sorted(set(df['investors'].str.split(',').sum())))
     botn2 = st.sidebar.button('Find Investor details')

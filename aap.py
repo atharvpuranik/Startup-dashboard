@@ -9,6 +9,7 @@ df['month'] = df['date'].dt.month
 df['year'] = df['date'].dt.year
 
 def load_overall_analysis():
+
     st.title('Overall Analysis')
 
     # total invested amount
